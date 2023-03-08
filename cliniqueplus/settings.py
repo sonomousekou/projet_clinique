@@ -44,12 +44,14 @@ INSTALLED_APPS = [
     'taggit',
     'import_export',
     'rest_framework',
+    'djmoney',
 
     # Add our new application
     'core.apps.CoreConfig', #This object was created for us in /core/apps.py
     'utilisateur.apps.UtilisateurConfig', #This object was created for us in /utilisateur/apps.py
 
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -162,3 +164,7 @@ REST_FRAMEWORK = {
 #     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
 #     'PAGE_SIZE': 10
 # }
+
+CURRENCIES = ('USD', 'EUR')
+CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €')]
+

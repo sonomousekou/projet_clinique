@@ -97,4 +97,6 @@ class ProfessionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class PatientAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('IDPatient', 'nom', 'prenom', 'email', 'telephone', 'ville', 'date_naissance', 'genre', 'adresse', 'code_postal', 'profession', 'age', 'twitter', 'facebook', 'instagram', )
 
-
+@admin.register(RendezVous)
+class RendezVousAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('patient', 'medcin', 'date', 'heure_debut', 'heure_fin', 'etat', 'prix', )
