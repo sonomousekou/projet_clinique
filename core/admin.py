@@ -4,6 +4,8 @@ from import_export.admin import ImportExportModelAdmin
 from django import forms
 
 # Register your models here.
+
+# medcin
 @admin.register(Specialite)
 class SpecialiteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display=('libelle', 'description', )
@@ -72,3 +74,27 @@ class DisponibiliteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 @admin.register(SpecialisationMedcin)
 class SpecialisationMedcinAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display=('libelle', 'medcin', 'description',)
+
+
+# patient
+@admin.register(Pays)
+class PaysAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display=('code','libelle', 'description', )
+
+@admin.register(Region)
+class RegionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('pays', 'code','libelle', 'description', )
+
+@admin.register(Ville)
+class VilleAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('region', 'code','libelle', 'description', )
+
+@admin.register(Profession)
+class ProfessionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display=('code','libelle', 'description', )
+
+@admin.register(Patient)
+class PatientAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('IDPatient', 'nom', 'prenom', 'email', 'telephone', 'ville', 'date_naissance', 'genre', 'adresse', 'code_postal', 'profession', 'age', 'twitter', 'facebook', 'instagram', )
+
+

@@ -18,6 +18,7 @@ class BaseModel(models.Model):# toutes les autres class vont heriter de ces 3 at
     class Meta:
         abstract=True
 
+# medcin
 class Specialite(BaseModel):
     libelle=models.CharField(max_length=255,blank=True,null=True)
     description = models.TextField(blank=True,null=True) #Short Description of the Specialite
@@ -244,4 +245,104 @@ class SpecialisationMedcin(BaseModel):
 
     def get_absolute_url(self):
         return reverse("SpecialisationsMedcin_details", kwargs={'pk': self.pk})
+
+
+# patient
+class Pays(BaseModel):
+    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle = CountryField(null=True,blank=True,blank_label='(select country)',unique=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Pays
+
+    def __str__(self):
+        return self.code
+
+    def get_absolute_url(self):
+        return reverse("pays_details", kwargs={'pk': self.pk})
+    
+class Region(BaseModel):
+    pays = models.ForeignKey(Pays,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_pays")
+    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle=models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Region
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("region_details", kwargs={'pk': self.pk})
+    
+class Ville(BaseModel):
+    region = models.ForeignKey(Region,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_region")
+    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle=models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Ville
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("ville_details", kwargs={'pk': self.pk})
+    
+class Profession(BaseModel):
+    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle=models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Profession
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("profession_details", kwargs={'pk': self.pk})
+    
+class Patient(BaseModel):
+
+    GENRES = (
+        ('h', 'Homme'),
+        ('f', 'Femme'),
+    )
+
+    IDPatient = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    nom = models.CharField(max_length=255,blank=True,null=True)
+    prenom = models.CharField(max_length=255,blank=True,null=True)
+    email = models.EmailField(db_index=True, unique=True)
+    telephone = PhoneNumberField(null=False, blank=False, unique=True)
+    ville = models.ForeignKey(Ville,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_ville")
+    date_naissance = models.DateField(blank=True,null=True)
+
+    genre = models.CharField(
+        max_length=1,
+        choices=GENRES,
+        blank=True,
+        default='h',
+        help_text='Select genre',
+    )
+   
+    adresse = models.CharField(max_length=255,blank=True,null=True)
+    code_postal = models.CharField(max_length=255,blank=True,null=True)
+    profession = models.ForeignKey(Profession,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_profession")
+    age = models.IntegerField(max_length=255,blank=True,null=True)
+
+    # media social
+    twitter = models.CharField(
+	    blank=True, null=True, name='twitter', help_text="Twitter", max_length=200)
+    facebook = models.CharField(
+	    blank=True, null=True, name='facebook', help_text="Facebook", max_length=200)
+    instagram = models.CharField(
+	    blank=True, null=True, name='instagram', help_text="Instagram", max_length=200)
+    linkdin = models.CharField(
+	    blank=True, null=True, name='linkdin', help_text="Linkdin", max_length=200)
+
+    photo = models.ImageField(upload_to='patients/avatar/',blank=True, null=True)
+
+    def __str__(self):
+        return self.nom
+
+    def get_absolute_url(self):
+        return reverse("medcin_details", kwargs={'pk': self.pk})
+    
+    def get_shortname(self):
+        return f'{self.prenom[0:1]}.{self.nom}'
+
+    def get_fullname(self):
+	    return f'{self.prenom} {self.nom}'
     
