@@ -116,8 +116,8 @@ class Medcin(BaseModel):
         help_text='Select genre',
     )
     tags = TaggableManager()
-    specialite=models.ForeignKey(Specialite,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_specialite")
-    departement=models.ForeignKey(Departement,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_departement")
+    specialite = models.ForeignKey(Specialite,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_specialite")
+    departement = models.ForeignKey(Departement,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_departement")
     views = models.IntegerField(default=0)
     is_popular = models.BooleanField(default=False)
 
