@@ -1,7 +1,7 @@
 # Django REST Libs:
 from rest_framework import serializers
 # Local Libs:
-from .models import RendezVous,Specialite, Departement, Ecole, Formation, Specialisations, Clinique, Medcin, Education, Experience, Certificat, Galerie, Disponibilite, SpecialisationMedcin, Pays, Region, Ville, Profession, Patient
+from .models import RendezVous,Type_Piece, Piece,Specialite, Departement, Ecole, Formation, Specialisations, Clinique, Medcin, Education, Experience, Certificat, Galerie, Disponibilite, SpecialisationMedcin, Pays, Region, Ville, Profession, Patient
 
 class SpecialiteSerializer(serializers.ModelSerializer):
 	"""
@@ -67,6 +67,28 @@ class CliniqueSerializer(serializers.ModelSerializer):
 	"""
 	class Meta:
 		model = Clinique
+		fields = "__all__"
+
+class Type_PieceSerializer(serializers.ModelSerializer):
+	"""
+	Type_Piece serializer
+	Based on serializers.ModelSerializer
+	"""
+
+	class Meta:
+		model = Type_Piece
+		fields = "__all__"
+
+
+class PieceSerializer(serializers.ModelSerializer):
+	"""
+	Piece serializer
+	Based on serializers.ModelSerializer
+	"""
+	type_piece = Type_PieceSerializer(many=False, read_only=True)
+
+	class Meta:
+		model = Piece
 		fields = "__all__"
 
 

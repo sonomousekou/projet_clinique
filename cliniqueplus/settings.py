@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,8 +26,7 @@ SECRET_KEY = 'django-insecure-p3b-geue(b_0o*ad+t^@u-p++4d9fwd2lwlw-_p(md^n#35dhj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -45,10 +45,12 @@ INSTALLED_APPS = [
     'import_export',
     'rest_framework',
     'djmoney',
-
+    
+    
     # Add our new application
     'core.apps.CoreConfig', #This object was created for us in /core/apps.py
     'utilisateur.apps.UtilisateurConfig', #This object was created for us in /utilisateur/apps.py
+    'parametres',
 
 ]
 
@@ -152,7 +154,9 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        # 'rest_framework.permissions.DjangoModelPermissions',
+        'rest_framework.permissions.AllowAny',
     ],
 
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',

@@ -30,6 +30,14 @@ class SpecialisationsAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class CliniqueAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display=('libelle', 'description', )
 
+@admin.register(Type_Piece)
+class EducationAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('libelle', 'format', 'code', )
+
+@admin.register(Piece)
+class PieceAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('date_etablissement', 'date_expiration', 'lieu_etablissemnt', 'numero_piece', 'type_piece', )
+
 class EduAdmin(admin.StackedInline):
     model= Education
 
@@ -44,9 +52,9 @@ class DispAdmin(admin.StackedInline):
 
 # @admin.register(Medcin)
 class MedcinAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('IDMedcin', 'nom', 'prenom', 'email', 'photo', 'telephone', 'pays', 'adresse', 'bio', 'anniversaire', 'genre', 'tags', 'specialite', 'views', 'is_popular', 'twitter', 'facebook', 'instagram', 'linkdin', )
-    ordering=('updated',)  
-    inlines=[EduAdmin,ExpAdmin,DispAdmin]
+    list_display = ('IDMedcin', 'photo', 'signature', 'tags', 'specialite', 'departement', 'views', 'is_popular', 'ville', 'piece', )
+    ordering = ('updated',)  
+    inlines = [EduAdmin,ExpAdmin,DispAdmin]
     list_filter = ('status', 'genre','specialite','departement')
 
 admin.site.register(Medcin,MedcinAdmin)
@@ -79,7 +87,7 @@ class SpecialisationMedcinAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 # patient
 @admin.register(Pays)
 class PaysAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display=('code','libelle', 'description', )
+    list_display = ('code', 'libelle', 'nationnalite', )
 
 @admin.register(Region)
 class RegionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
@@ -95,7 +103,7 @@ class ProfessionAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 @admin.register(Patient)
 class PatientAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('IDPatient', 'nom', 'prenom', 'email', 'telephone', 'ville', 'date_naissance', 'genre', 'adresse', 'code_postal', 'profession', 'age', 'twitter', 'facebook', 'instagram', )
+    list_display = ('IDPatient', 'photo', 'signature', 'ville', 'piece', 'profession', )
 
 @admin.register(RendezVous)
 class RendezVousAdmin(ImportExportModelAdmin, admin.ModelAdmin):

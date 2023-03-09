@@ -11,7 +11,6 @@ from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 # Create your models here.
 
 # la class de base
-
 class BaseModel(models.Model):# toutes les autres class vont heriter de ces 3 attributs de la class BaseModel
     uid=models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     status=models.BooleanField(default=True,help_text='active ou desactive')
@@ -71,7 +70,7 @@ class Formation(BaseModel):
 
 #   les champs d'action des medcins  
 class Specialisations(BaseModel):
-    libelle=models.CharField(max_length=255,blank=True,null=True)
+    libelle = models.CharField(max_length=255,blank=True,null=True)
     description = models.TextField(blank=True,null=True) #Short Description of the Specialisations
 
     def __str__(self):
@@ -81,7 +80,7 @@ class Specialisations(BaseModel):
         return reverse("Specialisations_details", kwargs={'pk': self.pk})
   
 class Clinique(BaseModel):
-    libelle=models.CharField(max_length=255,blank=True,null=True)
+    libelle = models.CharField(max_length=255,blank=True,null=True)
     description = models.TextField(blank=True,null=True) #Short Description of the Clinique
 
     def __str__(self):
@@ -90,24 +89,105 @@ class Clinique(BaseModel):
     def get_absolute_url(self):
         return reverse("clinique_details", kwargs={'pk': self.pk})
 
+class Pays(BaseModel):
+    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle = CountryField(null=True,blank=True,blank_label='(select country)',unique=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Pays
+    nationnalite = models.CharField(max_length=255,blank=True,null=True)
 
-class Medcin(BaseModel):
+    def __str__(self):
+        return self.code
 
+    def get_absolute_url(self):
+        return reverse("pays_details", kwargs={'pk': self.pk})
+    
+class Region(BaseModel):
+    pays = models.ForeignKey(Pays,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_pays")
+    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle = models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Region
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("region_details", kwargs={'pk': self.pk})
+    
+class Ville(BaseModel):
+    region = models.ForeignKey(Region,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_region")
+    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle=models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Ville
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("ville_details", kwargs={'pk': self.pk})
+    
+class Profession(BaseModel):
+    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    libelle = models.CharField(max_length=255,blank=True,null=True)
+    description = models.TextField(blank=True,null=True) #Short Description of the Profession
+
+    def __str__(self):
+        return self.libelle
+
+    def get_absolute_url(self):
+        return reverse("profession_details", kwargs={'pk': self.pk})
+    
+class Type_Piece(BaseModel):
+    libelle = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    format = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    
+    def __str__(self):
+        return self.code
+
+    def get_absolute_url(self):
+        return reverse("type_piece_details", kwargs={'pk': self.pk})
+
+class Piece(BaseModel):
+    date_etablissement = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    date_expiration = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    lieu_etablissemnt = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    numero_piece = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    type_piece = models.ForeignKey(Type_Piece,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_type_piece")
+   
+    def __str__(self):
+        return self.numero_piece
+
+    def get_absolute_url(self):
+        return reverse("piece_details", kwargs={'pk': self.pk})
+    
+class Personne(BaseModel):
     GENRES = (
         ('h', 'Homme'),
         ('f', 'Femme'),
     )
 
-    IDMedcin = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    CIVILITES = (
+        ('Monsieur','Monsieur'),
+        ('Madame','Madame'),
+        ('Mademoiselle','Mademoiselle'),
+    )
+    STATUT_MATRIMONIAL = (
+        ('célibataire', 'Célibataire'),
+        ('mariée', 'Marié/Mariée'),
+        ('veuve', 'Veuf/Veuve'),
+        ('divorcée', 'Divorcé/Divorcée'),
+        
+    )
+
     nom = models.CharField(max_length=255,blank=True,null=True)
     prenom = models.CharField(max_length=255,blank=True,null=True)
     email = models.EmailField(db_index=True, unique=True)
-    photo = models.ImageField(upload_to='medcins/avatar/',blank=True, null=True)
     telephone = PhoneNumberField(null=False, blank=False, unique=True)
     pays = CountryField(null=True,blank=True,blank_label='(select country)')
-    adresse = models.CharField(max_length=255,blank=True,null=True)
+    addresse = models.CharField(max_length=255,blank=True,null=True)
     bio = models.TextField(blank=True,null=True) #Short Description of the Specialite
-    anniversaire = models.CharField(max_length=255,blank=True,null=True)
+    date_naissance = models.DateField(blank=True,null=True)
+    lieu_naissance = models.CharField(max_length=255,blank=True,null=True)
     genre = models.CharField(
         max_length=1,
         choices=GENRES,
@@ -115,11 +195,24 @@ class Medcin(BaseModel):
         default='h',
         help_text='Select genre',
     )
-    tags = TaggableManager()
-    specialite = models.ForeignKey(Specialite,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_specialite")
-    departement = models.ForeignKey(Departement,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_departement")
-    views = models.IntegerField(default=0)
-    is_popular = models.BooleanField(default=False)
+    statut_matrimonial = models.CharField(
+        max_length=100,
+        choices=STATUT_MATRIMONIAL,
+        blank=True,
+        default='célibataire',
+        help_text='statut matrimonial',
+    )
+
+    civilite = models.CharField(
+        max_length=100,
+        choices=CIVILITES,
+        blank=True,
+        default='Monsieur',
+        help_text='select civilité',
+    )
+
+    code_postal = models.CharField(max_length=255,blank=True,null=True)
+    age = models.IntegerField(blank=True,null=True)
 
     # media social
     twitter = models.CharField(
@@ -130,21 +223,37 @@ class Medcin(BaseModel):
 	    blank=True, null=True, name='instagram', help_text="Instagram", max_length=200)
     linkdin = models.CharField(
 	    blank=True, null=True, name='linkdin', help_text="Linkdin", max_length=200)
-    youtube = models.CharField(
-	    blank=True, null=True, name='youtube', help_text="Linkdin", max_length=200)
     
-
+    class Meta:
+        abstract=True
+        
     def __str__(self):
         return self.nom
-
-    def get_absolute_url(self):
-        return reverse("medcin_details", kwargs={'pk': self.pk})
     
     def get_shortname(self):
         return f'{self.prenom[0:1]}.{self.nom}'
 
     def get_fullname(self):
 	    return f'{self.prenom} {self.nom}'
+    
+# medcin
+class Medcin(Personne):
+    IDMedcin = models.CharField(max_length=255,blank=True,null=True,unique=True)
+    photo = models.ImageField(upload_to='medcins/avatars/',blank=True, null=True)
+    signature = models.ImageField(upload_to='medcins/signatures/',blank=True, null=True)
+    tags = TaggableManager()
+    specialite = models.ForeignKey(Specialite,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_specialite")
+    departement = models.ForeignKey(Departement,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_departement")
+    views = models.IntegerField(default=0)
+    is_popular = models.BooleanField(default=False)
+    ville = models.ForeignKey(Ville,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_medcin_ville")
+    piece = models.ForeignKey(Piece,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_medcin_piece")
+  
+    def __str__(self):
+        return self.nom
+
+    def get_absolute_url(self):
+        return reverse("medcin_details", kwargs={'pk': self.pk})
 
 class Education(BaseModel):
     formation=models.CharField(max_length=255,blank=True,null=True,help_text='Le libelle de la formation')
@@ -251,104 +360,21 @@ class SpecialisationMedcin(BaseModel):
 
 
 # patient
-class Pays(BaseModel):
-    code = models.CharField(max_length=255,blank=True,null=True,unique=True)
-    libelle = CountryField(null=True,blank=True,blank_label='(select country)',unique=True)
-    description = models.TextField(blank=True,null=True) #Short Description of the Pays
-
-    def __str__(self):
-        return self.code
-
-    def get_absolute_url(self):
-        return reverse("pays_details", kwargs={'pk': self.pk})
-    
-class Region(BaseModel):
-    pays = models.ForeignKey(Pays,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_pays")
-    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
-    libelle=models.CharField(max_length=255,blank=True,null=True)
-    description = models.TextField(blank=True,null=True) #Short Description of the Region
-
-    def __str__(self):
-        return self.libelle
-
-    def get_absolute_url(self):
-        return reverse("region_details", kwargs={'pk': self.pk})
-    
-class Ville(BaseModel):
-    region = models.ForeignKey(Region,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_region")
-    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
-    libelle=models.CharField(max_length=255,blank=True,null=True)
-    description = models.TextField(blank=True,null=True) #Short Description of the Ville
-
-    def __str__(self):
-        return self.libelle
-
-    def get_absolute_url(self):
-        return reverse("ville_details", kwargs={'pk': self.pk})
-    
-class Profession(BaseModel):
-    code=models.CharField(max_length=255,blank=True,null=True,unique=True)
-    libelle=models.CharField(max_length=255,blank=True,null=True)
-    description = models.TextField(blank=True,null=True) #Short Description of the Profession
-
-    def __str__(self):
-        return self.libelle
-
-    def get_absolute_url(self):
-        return reverse("profession_details", kwargs={'pk': self.pk})
-    
-class Patient(BaseModel):
-
-    GENRES = (
-        ('h', 'Homme'),
-        ('f', 'Femme'),
-    )
-
+class Patient(Personne):
     IDPatient = models.CharField(max_length=255,blank=True,null=True,unique=True)
-    nom = models.CharField(max_length=255,blank=True,null=True)
-    prenom = models.CharField(max_length=255,blank=True,null=True)
-    email = models.EmailField(db_index=True, unique=True)
-    telephone = PhoneNumberField(null=False, blank=False, unique=True)
-    ville = models.ForeignKey(Ville,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_ville")
-    date_naissance = models.DateField(blank=True,null=True)
-
-    genre = models.CharField(
-        max_length=1,
-        choices=GENRES,
-        blank=True,
-        default='h',
-        help_text='Select genre',
-    )
-   
-    adresse = models.CharField(max_length=255,blank=True,null=True)
-    code_postal = models.CharField(max_length=255,blank=True,null=True)
-    profession = models.ForeignKey(Profession,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_profession")
-    age = models.IntegerField(blank=True,null=True)
-
-    # media social
-    twitter = models.CharField(
-	    blank=True, null=True, name='twitter', help_text="Twitter", max_length=200)
-    facebook = models.CharField(
-	    blank=True, null=True, name='facebook', help_text="Facebook", max_length=200)
-    instagram = models.CharField(
-	    blank=True, null=True, name='instagram', help_text="Instagram", max_length=200)
-    linkdin = models.CharField(
-	    blank=True, null=True, name='linkdin', help_text="Linkdin", max_length=200)
-
     photo = models.ImageField(upload_to='patients/avatar/',blank=True, null=True)
-
+    signature = models.ImageField(upload_to='patients/signatures/',blank=True, null=True)
+    ville = models.ForeignKey(Ville,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_personne_ville")
+    piece = models.ForeignKey(Piece,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_p_piece")
+    profession = models.ForeignKey(Profession,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_id_profession")
+  
     def __str__(self):
-        return self.nom
+        return self.IDPatient
 
     def get_absolute_url(self):
-        return reverse("medcin_details", kwargs={'pk': self.pk})
+        return reverse("patient_details", kwargs={'pk': self.pk})
     
-    def get_shortname(self):
-        return f'{self.prenom[0:1]}.{self.nom}'
-
-    def get_fullname(self):
-	    return f'{self.prenom} {self.nom}'
-    
+# RendezVous    
 class RendezVous(BaseModel):
 # Le statut en attente signifie que la tâche n'est pas commencée. ...
 # Le statut en cours signifie que la tâche est en train d'être effectuée.
@@ -359,9 +385,6 @@ class RendezVous(BaseModel):
         ('en cours','En cours'),
         ('terminé','Terminé'),
     )
-
-
-
     patient = models.ForeignKey(Patient,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_patient_rendezvous")
     medcin = models.ForeignKey(Medcin,on_delete=models.SET_NULL,blank=True,null=True,related_name="fk_medcin_rendezvous")
     date = models.DateField(blank=True,null=True)
@@ -391,5 +414,5 @@ class RendezVous(BaseModel):
         return f'{self.patient.nom} '
 
     def get_absolute_url(self):
-        return reverse("patient_details", kwargs={'pk': self.pk})
+        return reverse("rendezvous_details", kwargs={'pk': self.pk})
 
