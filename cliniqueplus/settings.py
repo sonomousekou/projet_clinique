@@ -43,10 +43,12 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'taggit',
     'import_export',
-    'rest_framework',
     'djmoney',
     
-    
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
+
     # Add our new application
     'core.apps.CoreConfig', #This object was created for us in /core/apps.py
     'utilisateur.apps.UtilisateurConfig', #This object was created for us in /utilisateur/apps.py
@@ -54,8 +56,9 @@ INSTALLED_APPS = [
 
 ]
 
-
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #new 
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,7 +66,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
+
 
 ROOT_URLCONF = 'cliniqueplus.urls'
 
@@ -140,10 +145,16 @@ USE_I18N = True
 USE_TZ = True
 
 
+CURRENCIES = ('USD', 'EUR')
+CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €')]
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -164,11 +175,22 @@ REST_FRAMEWORK = {
 
 }
 
+# CORS_ALLOW_ALL_ORIGINS = True
+
 # REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-#     'PAGE_SIZE': 10
+#     # Use Django's standard `django.contrib.auth` permissions,
+#     # or allow read-only access for unauthenticated users.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.BasicAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework.authentication.TokenAuthentication',
+#     ]
 # }
 
-CURRENCIES = ('USD', 'EUR')
-CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €')]
+
+# AUTH_USER_MODEL = 'utilisateur.models.CustomUser'
+AUTH_USER_MODEL = 'utilisateur.CustomUser'
 
