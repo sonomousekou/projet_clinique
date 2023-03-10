@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig', #This object was created for us in /core/apps.py
     'utilisateur.apps.UtilisateurConfig', #This object was created for us in /utilisateur/apps.py
     'parametres',
+    'app_medcin.apps.AppMedcinConfig',
+    'app_patient.apps.AppPatientConfig',
 
 ]
 
