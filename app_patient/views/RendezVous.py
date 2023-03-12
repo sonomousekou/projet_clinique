@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from parametres.serializers import RendezVousSerializer
-from parametres.models import RendezVous
+from app_patient.serializers import RendezVousSerializer
+from app_patient.models import RendezVous
 
 # RendezVous
 @api_view(['GET', 'POST'])
